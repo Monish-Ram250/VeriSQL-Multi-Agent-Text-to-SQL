@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VeriSQL</title>
+<style>
+:root{--bg:#0d0809;--bg2:#140c0e;--card:#1b1115;--card2:#251619;--bd:#3a2429;--tx:#f7ecee;--mu:#a8929a;--ac:#f0384a;--ac2:#f5b84b;--ok:#84cc16;--er:#ff9a8b;--wn:#fbbf24;--r:14px;--sh:0 8px 30px #0006}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:radial-gradient(900px 500px at 100% -10%,#f0384a0f,transparent 60%),radial-gradient(700px 500px at -10% 110%,#f5b84b0a,transparent 60%),var(--bg);color:var(--tx);font:14px/1.55 Inter,"Segoe UI",system-ui,-apple-system,sans-serif;display:flex;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:#4a2f35;border-radius:9px}
+.side{width:244px;background:linear-gradient(180deg,#120a0c,#0a0607);border-right:1px solid var(--bd);padding:18px 14px;display:flex;flex-direction:column;gap:3px;flex-shrink:0;transition:transform .25s}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;padding:2px 8px 20px;letter-spacing:-.4px}
+.logo::before{content:"✓";display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--ac),#a3162b);color:#ffffff;font-size:16px;box-shadow:0 0 18px #f0384a55}
+.logo b{color:var(--ac)}
+.nav{background:none;border:0;text-align:left;padding:10px 12px;border-radius:10px;color:var(--mu);cursor:pointer;transition:.18s;display:flex;align-items:center;gap:11px}
+.nav i{font-style:normal;width:20px;text-align:center;opacity:.75}
+.nav:hover{background:#ffffff08;color:var(--tx)}.nav:hover i{opacity:1}
+.nav.on{background:linear-gradient(90deg,#f0384a1f,#f0384a08);color:#fff;box-shadow:inset 3px 0 var(--ac)}.nav.on i{color:var(--ac);opacity:1}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh}
+.top{display:flex;align-items:center;gap:10px;padding:14px 28px;border-bottom:1px solid var(--bd);background:#0d0809cc;backdrop-filter:blur(10px)}
+.top h1{font-size:17px;margin:0;flex:1;letter-spacing:-.2px}.burger{display:none;background:none;border:1px solid var(--bd);border-radius:9px;padding:4px 11px;cursor:pointer}
+.pill{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mu);background:var(--card);border:1px solid var(--bd);border-radius:99px;padding:5px 12px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:#5f4a50}.dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}.dot.er{background:var(--er);box-shadow:0 0 8px var(--er)}
+.page{flex:1;overflow:auto;padding:28px;display:none}.page.on{display:block;animation:fd .25s}@keyframes fd{from{opacity:0;transform:translateY(6px)}}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.hero h2{margin:0;font-size:28px;letter-spacing:-.8px;background:linear-gradient(90deg,#fff,var(--ac) 70%,var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:6px 0 0;color:var(--mu)}
+.card{background:linear-gradient(180deg,var(--card),#150d10);border:1px solid var(--bd);border-radius:var(--r);padding:20px;box-shadow:var(--sh)}
+.card h2{font-size:11.5px;margin:0 0 12px;color:var(--mu);text-transform:uppercase;letter-spacing:1.1px;font-weight:700}
+textarea,input,select{width:100%;background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:11px 14px;outline:0;transition:.18s}
+textarea:focus,input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 3px #f0384a26}textarea{resize:vertical;min-height:96px;font-size:15px}
+input[type=file]{padding:9px}input::file-selector-button{background:var(--card2);border:1px solid var(--bd);color:var(--tx);border-radius:7px;padding:5px 12px;margin-right:12px;cursor:pointer}
+.btn{background:linear-gradient(135deg,var(--ac),#a3162b);border:0;color:#ffffff;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:700;transition:.18s;box-shadow:0 4px 16px #f0384a30}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px #f0384a50}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.g{background:transparent;border:1px solid var(--bd);color:var(--tx);font-weight:500;box-shadow:none}.btn.g:hover{border-color:var(--ac);color:var(--ac)}
+.btn.d{background:#9f1239;color:#fff;box-shadow:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>.grow{flex:1}
+.chip{background:var(--card2);border:1px solid var(--bd);border-radius:99px;padding:6px 14px;font-size:12.5px;color:var(--mu);cursor:pointer;transition:.18s}.chip:hover{color:var(--ac);border-color:var(--ac);background:#f0384a0d}
+pre.sql{margin:0;background:#0a0607;border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:10px;padding:16px;overflow:auto;font:13px/1.7 "JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap}
+.k{color:var(--ac2);font-weight:600}.s{color:#bef264}.n{color:#fb923c}.c{color:#75606a;font-style:italic}.f{color:#ffa8b4}
+.badge{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:700;border:1px solid;letter-spacing:.2px}
+.b-ok{color:var(--ok);border-color:#84cc1644;background:#84cc161a}.b-er{color:var(--er);border-color:#ff9a8b44;background:#ff9a8b1a}.b-wn{color:var(--wn);border-color:#fbbf2444;background:#fbbf241a}.b-mu{color:var(--mu);border-color:var(--bd)}
+.tw{overflow:auto;max-height:440px;border:1px solid var(--bd);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card2);color:var(--ac);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.7px}tbody tr:nth-child(even) td{background:#ffffff04}tr:hover td{background:#f0384a0a!important}
+.mu{color:var(--mu)}.err{color:var(--er)}.sm{font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.grid>div{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}.grid .mu{text-transform:uppercase;letter-spacing:.8px;font-size:10.5px}
+.sk{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--card2),#3a2429,var(--card2));background-size:200% 100%;animation:sh 1.2s infinite;margin:9px 0}@keyframes sh{to{background-position:-200% 0}}
+.empty{text-align:center;color:var(--mu);padding:40px 12px;border:1px dashed var(--bd);border-radius:var(--r)}
+.tbl{border:1px solid var(--bd);border-radius:12px;margin-bottom:10px;background:var(--card);overflow:hidden;transition:.18s}.tbl:hover{border-color:#f0384a44}
+.tbl>summary{padding:13px 16px;cursor:pointer;font-weight:700;list-style:none;display:flex;gap:10px;align-items:center}.tbl>summary::before{content:"▸";color:var(--ac);transition:.18s}.tbl[open]>summary::before{transform:rotate(90deg)}
+.col{display:flex;gap:10px;padding:8px 16px;border-top:1px solid var(--bd);font-size:13px;align-items:center;flex-wrap:wrap}.col .t{color:#ffa8b4;font:12px "JetBrains Mono",ui-monospace,monospace}
+.flow{display:flex;flex-direction:column}
+.node{display:flex;gap:16px;align-items:flex-start;position:relative;padding-bottom:22px}
+.node::before{content:"";position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--bd)}.node:last-child::before{display:none}
+.nd{width:32px;height:32px;border-radius:50%;border:2px solid var(--bd);background:var(--bg2);flex-shrink:0;display:grid;place-items:center;font-size:13px;z-index:1;transition:.3s}
+.node.completed .nd{border-color:var(--ok);color:var(--ok);background:#84cc161a;box-shadow:0 0 14px #84cc1633}.node.failed .nd{border-color:var(--er);color:var(--er);background:#ff9a8b1a}.node.repairing .nd{border-color:var(--wn);color:var(--wn);background:#fbbf241a}
+.node.running .nd{border-color:var(--ac);color:var(--ac);animation:pl 1s infinite}@keyframes pl{50%{box-shadow:0 0 0 7px #f0384a2e}}
+.node.completed::before{background:linear-gradient(var(--ok),var(--bd))}
+.hist{border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--card);transition:.18s}.hist:hover{border-color:#f0384a40}
+.toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:9}
+.toast{background:var(--card2);border:1px solid var(--bd);border-left:3px solid var(--ac);padding:11px 16px;border-radius:10px;max-width:350px;box-shadow:var(--sh);animation:in .2s}.toast.er{border-left-color:var(--er)}.toast.ok{border-left-color:var(--ok)}@keyframes in{from{opacity:0;transform:translateY(8px)}}
+label{display:block;font-size:12px;color:var(--mu);margin:0 0 5px;font-weight:600}.f2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:800px){.side{position:fixed;inset:0 auto 0 0;z-index:8;transform:translateX(-100%)}.side.open{transform:none;box-shadow:var(--sh)}.burger{display:block}.f2{grid-template-columns:1fr}.page{padding:16px}.top{padding:12px 16px}.hero h2{font-size:22px}#pApi,#pSess{display:none}}
+</style>
+</head>
+<body>
+<aside class="side" id="side">
+  <div class="logo">Veri<b>SQL</b></div>
+  <button class="nav on" data-p="query"><i>✦</i>New Query</button>
+  <button class="nav" data-p="history"><i>◷</i>Query History</button>
+  <button class="nav" data-p="conn"><i>⛁</i>Database Connection</button>
+  <button class="nav" data-p="schema"><i>▦</i>Schema Explorer</button>
+  <button class="nav" data-p="flow"><i>⇄</i>Agent Workflow</button>
+  <button class="nav" data-p="memory"><i>◈</i>Long-Term Memory</button>
+</aside>
+<div class="main">
+  <header class="top">
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
+    <h1 id="title">New Query</h1>
+    <span class="pill"><span class="dot" id="dDb"></span><span id="tDb">No database</span></span>
+    <span class="pill" id="pApi"><span class="dot" id="dApi"></span><span id="tApi">API</span></span>
+    <span class="pill" id="pSess"><span id="tSess">No session</span></span>
+  </header>
+
+  <section class="page on" id="p-query"><div class="wrap">
+    <div class="hero"><h2>Ask your database anything</h2><p>Every query is written by an AI agent, then independently verified and run read-only.</p></div>
+    <div class="card"><h2>Ask a question</h2>
+      <textarea id="q" maxlength="1000" placeholder="Show the top five highest-paid employees."></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="go">Submit Query</button><button class="btn g" id="clr">Clear</button>
+        <span class="mu sm grow" id="hint">Ctrl + Enter to submit</span>
+      </div>
+      <div class="row" style="margin-top:12px" id="ex"></div>
+    </div>
+    <div id="out"></div>
+  </div></section>
+
+  <section class="page" id="p-history"><div class="wrap">
+    <div class="row"><input id="hq" class="grow" placeholder="Search questions or SQL…"><select id="hf" style="width:auto"><option value="">All outcomes</option><option>accepted</option><option>rejected</option><option>unsafe</option></select></div>
+    <div id="hl"></div>
+  </div></section>
+
+  <section class="page" id="p-conn"><div class="wrap">
+    <div class="card" id="connInfo"></div>
+    <div class="card" id="connForm"><h2>Connect a database</h2>
+      <div class="f2"><div><label>Database type</label><select id="ct"><option value="sqlite">SQLite (upload)</option><option value="postgresql">PostgreSQL</option><option value="mysql">MySQL</option></select></div><div></div></div>
+      <div id="fSqlite" style="margin-top:12px"><label>SQLite file (.db, .sqlite)</label><input type="file" id="cf" accept=".db,.sqlite,.sqlite3,.db3"></div>
+      <div id="fServer" style="display:none;margin-top:12px"><div class="f2">
+        <div><label>Host</label><input id="ch" placeholder="localhost"></div><div><label>Port</label><input id="cp" type="number" placeholder="5432"></div>
+        <div><label>Database</label><input id="cd"></div><div><label>Username</label><input id="cu" autocomplete="off"></div>
+        <div><label>Password</label><input id="cw" type="password" autocomplete="new-password"></div><div><label>Schema (PostgreSQL, optional)</label><input id="cs" placeholder="public"></div></div></div>
+      <div class="row" style="margin-top:14px"><button class="btn" id="cb">Connect</button></div><div class="err sm" id="ce" style="margin-top:8px"></div>
+    </div>
+  </div></section>
+
+  <section class="page" id="p-schema"><div class="wrap"><div class="row"><button class="btn g" id="se">Expand all</button><button class="btn g" id="sc">Collapse all</button></div><div id="sl"></div></div></section>
+  <section class="page" id="p-flow"><div class="wrap"><div class="card"><h2>Workflow of the last query</h2><div id="fl"></div></div></div></section>
+  <section class="page" id="p-memory"><div class="wrap">
+    <div class="card"><h2>About long-term memory</h2><p class="mu" style="margin:0">Memory supplies similar past experiences to the Writer Agent as context only. It never replaces verification: every generated query is validated afresh before it runs. Memories are kept per database, so experiences from another database are never reused.</p><div id="mInfo" class="sm mu" style="margin-top:10px"></div></div>
+    <div id="ml"></div>
+  </div></section>
+</div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const S={db:{connected:false},busy:false,last:null,hist:[],schema:null};
+const TITLES={query:"New Query",history:"Query History",conn:"Database Connection",schema:"Schema Explorer",flow:"Agent Workflow",memory:"Long-Term Memory"};
+const EXAMPLES=["Show the top five highest-paid employees.","How many employees are in each department?","List all projects and the employees working on them."];
+
+async function api(path,opt={}){
+  let r;
+  try{r=await fetch(path,{credentials:"include",...opt});}catch{throw new Error("Cannot reach the VeriSQL backend.");}
+  let b=null;try{b=await r.json();}catch{}
+  if(!r.ok){const e=b&&b.error;const m=e?(e.message+(e.details?" "+e.details.map(d=>d.field+": "+d.message).join("; "):"")):("Request failed ("+r.status+")");const x=new Error(m);x.code=e&&e.code;x.status=r.status;throw x;}
+  return b;
+}
+function toast(msg,type=""){const t=document.createElement("div");t.className="toast "+type;t.textContent=msg;$("#toasts").append(t);setTimeout(()=>t.remove(),4500);}
+
+/* navigation */
+function go(p){$$(".page").forEach(e=>e.classList.toggle("on",e.id==="p-"+p));$$(".nav").forEach(e=>e.classList.toggle("on",e.dataset.p===p));$("#title").textContent=TITLES[p];$("#side").classList.remove("open");
+  if(p==="history"||p==="memory")loadHistory();if(p==="schema")loadSchema();if(p==="flow")renderFlow();if(p==="conn")renderConn();}
+$$(".nav").forEach(b=>b.onclick=()=>go(b.dataset.p));$("#burger").onclick=()=>$("#side").classList.toggle("open");
+
+/* status */
+async function refresh(){
+  try{const h=await api("/api/health");$("#dApi").className="dot ok";$("#tApi").textContent="API online"+(h.llm_configured?"":" · no LLM key");}
+  catch{$("#dApi").className="dot er";$("#tApi").textContent="API offline";}
+  try{S.db=await api("/api/database/status");}catch{S.db={connected:false};}
+  const c=S.db.connected;$("#dDb").className="dot "+(c?"ok":"");$("#tDb").textContent=c?`${S.db.label} · ${S.db.dialect}`:"No database";
+  $("#tSess").textContent=c?"Session active":"No session";
+  $("#go").disabled=!c||S.busy;$("#q").disabled=!c;$("#hint").textContent=c?"Ctrl + Enter to submit":"Connect a database to ask questions.";
+  renderConn();
+}
+
+/* connection */
+function renderConn(){
+  const c=S.db;$("#connForm").style.display=c.connected?"none":"";
+  $("#connInfo").innerHTML=c.connected?`<h2>Connected</h2><div class="grid">${[["Database",c.label],["Type",c.dialect],["Tables",c.tables],["Columns",c.columns],["Foreign keys",c.foreign_keys],["Since",new Date(c.connected_at).toLocaleString()]].map(([k,v])=>`<div><div class="mu sm">${k}</div><div>${esc(v)}</div></div>`).join("")}</div><div class="row" style="margin-top:14px"><button class="btn d" id="dc">Disconnect</button></div>`:`<h2>Not connected</h2><div class="mu">Choose a database type below. Questions are enabled only after a successful connection.</div>`;
+  const d=$("#dc");if(d)d.onclick=disconnect;
+}
+$("#ct").onchange=()=>{const s=$("#ct").value==="sqlite";$("#fSqlite").style.display=s?"":"none";$("#fServer").style.display=s?"none":"";$("#cp").placeholder=$("#ct").value==="mysql"?"3306":"5432";};
+$("#cb").onclick=async()=>{
+  const t=$("#ct").value,fd=new FormData();fd.append("db_type",t);$("#ce").textContent="";
+  if(t==="sqlite"){const f=$("#cf").files[0];if(!f){$("#ce").textContent="Select a SQLite file first.";return;}fd.append("file",f);}
+  else{for(const[k,id]of[["host","ch"],["port","cp"],["database","cd"],["username","cu"],["password","cw"],["schema_name","cs"]]){const v=$("#"+id).value;if(v)fd.append(k,v);}}
+  $("#cb").disabled=true;$("#cb").textContent="Connecting…";
+  try{S.db=await api("/api/database/connect",{method:"POST",body:fd});$("#cw").value="";S.schema=null;S.last=null;$("#out").innerHTML="";toast("Connected to "+S.db.label,"ok");await refresh();go("query");}
+  catch(e){$("#ce").textContent=e.message;toast(e.message,"er");}
+  finally{$("#cb").disabled=false;$("#cb").textContent="Connect";}
+};
+async function disconnect(){
+  if(!confirm("Disconnect from this database? Uploaded SQLite files are deleted from the server."))return;
+  try{await api("/api/database/disconnect",{method:"POST"});S.schema=null;S.last=null;S.hist=[];$("#out").innerHTML="";toast("Disconnected");await refresh();}catch(e){toast(e.message,"er");}
+}
+
+/* SQL highlighting (input is escaped first) */
+const KW=/\b(SELECT|DISTINCT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|ON|AS|AND|OR|NOT|IN|IS|NULL|LIKE|BETWEEN|CASE|WHEN|THEN|ELSE|END|UNION|ALL|WITH|DESC|ASC|EXISTS|BY)\b/gi;
+function hl(sql){return esc(sql).replace(/(--[^\n]*)|('(?:[^']|&#39;&#39;)*'|&#39;.*?&#39;)|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_]+)(?=\()|(\b(?:SELECT|DISTINCT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|ON|AS|AND|OR|NOT|IN|IS|NULL|LIKE|BETWEEN|CASE|WHEN|THEN|ELSE|END|UNION|ALL|WITH|DESC|ASC|EXISTS|BY)\b)/gi,
+  (m,c,s,n,f,k)=>c?`<span class="c">${c}</span>`:s?`<span class="s">${s}</span>`:n?`<span class="n">${n}</span>`:f?`<span class="f">${f}</span>`:`<span class="k">${k}</span>`);}
+
+/* query */
+const BADGE={accepted:"b-ok",rejected:"b-er",unsafe:"b-er",execution_failed:"b-wn"};
+async function submit(){
+  const q=$("#q").value.trim();if(S.busy||!S.db.connected)return;if(q.length<3){toast("Enter a question of at least 3 characters.","er");return;}
+  S.busy=true;$("#go").disabled=true;$("#go").textContent="Running…";
+  $("#out").innerHTML=`<div class="card"><h2>Running agent workflow</h2><div class="sk" style="width:70%"></div><div class="sk"></div><div class="sk" style="width:85%"></div></div>`;
+  S.last={running:true};renderFlow();
+  try{S.last=await api("/api/query",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})});S.last.question=q;renderResult();
+    toast(S.last.status==="accepted"?"Query verified and executed":"Query "+S.last.status.replace("_"," "),S.last.status==="accepted"?"ok":"er");}
+  catch(e){S.last={error:e.message};$("#out").innerHTML=`<div class="card"><h2>Error</h2><div class="err">${esc(e.message)}</div></div>`;toast(e.message,"er");if(e.code==="no_database")await refresh();}
+  finally{S.busy=false;$("#go").textContent="Submit Query";$("#go").disabled=!S.db.connected;renderFlow();S.hist=[];}
+}
+function renderResult(){
+  const r=S.last,v=r.validation||{};
+  const chk=["syntax","safety","schema","execution"].map(k=>`<span class="badge ${v[k]&&v[k].valid?"b-ok":"b-er"}" title="${esc(v[k]&&v[k].error||"")}">${k} ${v[k]&&v[k].valid?"✓":"✗"}</span>`).join(" ")+` <span class="badge ${v.semantic_correct?"b-ok":"b-er"}">semantic ${v.semantic_correct?"✓":"✗"}</span>`;
+  let h=`<div class="card"><div class="row"><h2 style="margin:0" class="grow">Generated SQL</h2><span class="badge ${BADGE[r.status]||"b-mu"}">${esc(r.status)}</span>${r.repair_attempts?`<span class="badge b-wn">${r.repair_attempts} repair${r.repair_attempts>1?"s":""}</span>`:""}<button class="btn g" id="cp2">Copy SQL</button></div>
+  <pre class="sql" style="margin-top:10px">${r.sql?hl(r.sql):'<span class="mu">No SQL was produced.</span>'}</pre>
+  <p class="${r.status==="accepted"?"mu":"err"}" style="margin:10px 0 6px">${esc(r.message)}</p>${r.explanation?`<div class="mu sm">${esc(r.explanation)}</div>`:""}
+  ${(r.assumptions||[]).length?`<div class="mu sm" style="margin-top:6px">Assumptions: ${r.assumptions.map(esc).join("; ")}</div>`:""}<div class="row" style="margin-top:10px">${chk}</div></div>`;
+  if(r.status==="accepted"){
+    h+=`<div class="card"><div class="row"><h2 style="margin:0" class="grow">Results</h2><span class="mu sm">${r.row_count} row${r.row_count===1?"":"s"}${r.truncated?" (truncated)":""}${r.execution_ms!=null?" · "+r.execution_ms+" ms":""}</span><button class="btn g" id="csv" ${r.rows.length?"":"disabled"}>Download CSV</button></div><div style="margin-top:10px">`+
+    (r.rows.length?`<div class="tw"><table><thead><tr>${r.columns.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${r.rows.map(x=>`<tr>${x.map(c=>`<td>${c===null?'<span class="mu">NULL</span>':esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:`<div class="empty">The query ran successfully and returned no rows.</div>`)+`</div></div>`;
+  }
+  if((r.attempts||[]).length>1||r.status!=="accepted")h+=`<div class="card"><h2>Verification attempts</h2>${r.attempts.map(a=>`<div class="hist"><div class="row"><b>Attempt ${a.attempt+1}</b><span class="badge ${a.decision==="accept"?"b-ok":"b-er"}">${esc(a.decision)}</span></div><pre class="sql" style="margin-top:8px">${hl(a.sql)}</pre>${a.feedback?`<div class="err sm" style="margin-top:6px">${esc(a.feedback)}</div>`:""}</div>`).join("")}</div>`;
+  $("#out").innerHTML=h;
+  $("#cp2").onclick=()=>copy(r.sql);const c=$("#csv");if(c)c.onclick=()=>csv(r);
+}
+async function copy(t){try{await navigator.clipboard.writeText(t);toast("SQL copied","ok");}catch{toast("Copy failed","er");}}
+function csv(r){
+  const cell=v=>{let s=v===null?"":String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const t=[r.columns,...r.rows].map(x=>x.map(cell).join(",")).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="verisql-results.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* schema */
+async function loadSchema(){
+  const el=$("#sl");if(!S.db.connected){el.innerHTML=`<div class="empty">Connect a database to explore its schema.</div>`;return;}
+  if(!S.schema){el.innerHTML='<div class="sk"></div><div class="sk"></div><div class="sk"></div>';try{S.schema=await api("/api/database/schema");}catch(e){el.innerHTML=`<div class="err">${esc(e.message)}</div>`;return;}}
+  el.innerHTML=Object.entries(S.schema.tables).map(([n,t])=>{const fk=Object.fromEntries(t.foreign_keys.map(f=>[f.column,f]));
+    return `<details class="tbl"><summary>${esc(n)} <span class="mu sm">${t.columns.length} columns</span></summary>${t.columns.map(c=>`<div class="col"><span style="min-width:150px">${esc(c.name)}</span><span class="t">${esc(c.type)}</span>${c.primary_key?'<span class="badge b-wn">PK</span>':""}${fk[c.name]?`<span class="badge b-ok">FK → ${esc(fk[c.name].referenced_table)}.${esc(fk[c.name].referenced_column)}</span>`:""}${c.sensitive?'<span class="badge b-er">sensitive</span>':""}${c.nullable?"":'<span class="mu sm">not null</span>'}</div>`).join("")}</details>`;}).join("");
+}
+$("#se").onclick=()=>$$(".tbl").forEach(d=>d.open=true);$("#sc").onclick=()=>$$(".tbl").forEach(d=>d.open=false);
+
+/* workflow: only states the backend response actually supports */
+function renderFlow(){
+  const r=S.last,el=$("#fl");
+  if(!r){el.innerHTML=`<div class="empty">Run a query to see how the agents handled it.</div>`;return;}
+  if(r.error){el.innerHTML=`<div class="empty err">The last request failed: ${esc(r.error)}</div>`;return;}
+  const run=!!r.running,at=r.attempts||[],rep=r.repair_attempts||0,ok=r.status==="accepted",unsafe=r.status==="unsafe";
+  const st=(x)=>run?"running":x;
+  const N=[
+    ["Long-Term Memory",st(r.memory_available?"completed":"failed"),r.memory_available?`${r.memories_used} similar experience(s) retrieved (same database only)`:"Embedding model unavailable — memory skipped"],
+    ["Writer Agent",st(r.sql||at.length?"completed":"failed"),r.explanation||"Generates SQL from the question, schema and memory"],
+    ["Verifier Agent",st(at.length?(at[at.length-1].decision==="accept"?"completed":"failed"):"waiting"),at.map(a=>`Attempt ${a.attempt+1}: ${a.decision}`).join(" · ")||"Syntax, safety, schema, execution and semantic checks"],
+    ["Repair Loop",st(rep?(ok?"completed":"failed"):"waiting"),rep?`${rep} repair attempt(s) using evaluator feedback`:"Not needed"],
+    ["SQL Execution",st(ok?"completed":r.status==="execution_failed"?"failed":"waiting"),ok?`${r.row_count} row(s)${r.execution_ms!=null?" in "+r.execution_ms+" ms":""}`:unsafe?"Skipped — rejected as unsafe":"Not executed"],
+    ["Final Response",st(r.status?(ok?"completed":"failed"):"waiting"),r.message||""],
+    ["Memory Storage",st(r.memory_available?"completed":"waiting"),r.memory_available?"Outcome stored for this database":"Not stored — embeddings unavailable"]];
+  const ic={completed:"✓",failed:"✗",running:"●",waiting:"○",repairing:"↻"};
+  el.innerHTML=(run?`<div class="mu sm" style="margin-bottom:12px">Workflow in progress. The backend reports results once it finishes.</div>`:`<div class="mu sm" style="margin-bottom:12px">Total ${r.total_ms} ms</div>`)+`<div class="flow">${N.map(([n,s,d])=>{if(s==="completed"&&n==="Repair Loop"&&rep)s="repairing";return `<div class="node ${s}"><div class="nd">${ic[s]}</div><div><b>${n}</b> <span class="badge ${s==="completed"?"b-ok":s==="failed"?"b-er":s==="repairing"?"b-wn":"b-mu"}">${s==="repairing"?"repaired":s}</span><div class="mu sm">${esc(d)}</div></div></div>`;}).join("")}</div>`;
+}
+
+/* history & memory */
+async function loadHistory(){
+  if(!S.db.connected){$("#hl").innerHTML=$("#ml").innerHTML=`<div class="empty">Connect a database to see its history.</div>`;return;}
+  if(!S.hist.length){try{S.hist=(await api("/api/history?limit=100")).history;}catch(e){$("#hl").innerHTML=$("#ml").innerHTML=`<div class="err">${esc(e.message)}</div>`;return;}}
+  drawHistory();drawMemory();
+}
+function drawHistory(){
+  const q=$("#hq").value.toLowerCase(),f=$("#hf").value;
+  const L=S.hist.filter(h=>(!f||h.outcome===f)&&(!q||(h.question+" "+h.sql).toLowerCase().includes(q)));
+  $("#hl").innerHTML=L.length?L.map(h=>`<div class="hist"><div class="row"><b class="grow">${esc(h.question)}</b><span class="badge ${BADGE[h.outcome]||"b-mu"}">${esc(h.outcome)}</span></div><pre class="sql" style="margin:8px 0">${hl(h.sql)}</pre><div class="mu sm">${h.created_at?esc(h.created_at)+" UTC · ":""}${h.repair_count} repair(s)</div></div>`).join(""):`<div class="empty">${S.hist.length?"No entries match your filters.":"No history yet for this database."}</div>`;
+}
+$("#hq").oninput=drawHistory;$("#hf").onchange=drawHistory;
+function drawMemory(){
+  $("#mInfo").textContent=S.last&&S.last.memories_used!=null?`Last query retrieved ${S.last.memories_used} similar experience(s).`:"";
+  $("#ml").innerHTML=S.hist.length?S.hist.map(h=>`<div class="hist"><div class="row"><b class="grow">${esc(h.question)}</b><span class="badge ${BADGE[h.outcome]||"b-mu"}">${esc(h.outcome)}</span></div>
+  <pre class="sql" style="margin:8px 0">${hl(h.sql)}</pre>${h.feedback?`<div class="sm"><span class="mu">Evaluator feedback:</span> ${esc(h.feedback)}</div>`:""}
+  ${(h.repair_history||[]).length>1?`<details style="margin-top:8px"><summary class="mu sm" style="cursor:pointer">Repair history (${h.repair_history.length} attempts)</summary>${h.repair_history.map(a=>`<div class="sm" style="margin-top:6px"><b>#${a.attempt+1} ${esc(a.decision)}</b> — <code>${esc(a.sql)}</code>${a.feedback?`<div class="mu">${esc(a.feedback)}</div>`:""}</div>`).join("")}</details>`:""}</div>`).join(""):`<div class="empty">No stored experiences for this database yet.</div>`;
+}
+
+/* init */
+$("#go").onclick=submit;$("#clr").onclick=()=>{$("#q").value="";$("#out").innerHTML="";S.last=null;renderFlow();$("#q").focus();};
+$("#q").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();submit();}});
+$("#ex").innerHTML=EXAMPLES.map(x=>`<button class="chip">${esc(x)}</button>`).join("");$$("#ex .chip").forEach(c=>c.onclick=()=>{$("#q").value=c.textContent;$("#q").focus();});
+renderFlow();refresh();setInterval(refresh,30000);
+</script>
+</body>
+</html>
