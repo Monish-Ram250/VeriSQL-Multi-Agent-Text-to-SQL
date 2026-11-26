@@ -539,7 +539,7 @@ Monish is responsible for the complete backend development, including the MCP se
 
 Raghava Sai is responsible for frontend development and is working on AWS cloud deployment and Blue-Green deployment implementation.
 
- Demo Video Link : https://drive.google.com/file/d/1jqj-IlgAA30fljfZ_gmnqbEXKs4JbMOz/view?usp=sharing
+ Demo Video Link :[ https://drive.google.com/file/d/1jqj-IlgAA30fljfZ_gmnqbEXKs4JbMOz/view?usp=sharing](https://drive.google.com/file/d/1Ar-zJfyDodJoejnDMGCCLuzirEFc9cGe/view?usp=sharing)
 
 Together, we are building VeriSQL as a complete multi-agent Text-to-SQL application with an interactive frontend and cloud deployment.
 
